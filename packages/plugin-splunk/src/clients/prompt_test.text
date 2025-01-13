@@ -1,0 +1,77 @@
+Given the following JSON representing a Splunk event:
+
+```json
+{
+    "message": {
+        "type": "error",
+        "data": {
+            "name": "Function failed",
+            "message": "Function failed: Asset identified by account id: 001Mn00000RyRc6IAF does not exists in salesforce.",
+            "source": {
+                "id": "7538c914.bff838",
+                "type": "Function",
+                "name": "Check Asset Exist",
+                "count": 1
+            },
+            "stack": "Function node:7538c914.bff838 [Check Asset Exist]:3\n    throw new Error(`Asset identified by account id: ${msg.resident.AccountId} does not exists in salesforce.`);\n    ^\n\nError: Asset identified by account id: 001Mn00000RyRc6IAF does not exists in salesforce.\n    at Function node:7538c914.bff838 [Check Asset Exist]:3:11\n    at Function node:7538c914.bff838 [Check Asset Exist]:10:3\n    at Script.runInContext (node:vm:141:12)\n    at FunctionNode.<anonymous> (/var/task/node_modules/@kumologica/runtime/src/nodes/core/transformation/function.js:285:25)\n    at FunctionNode.emit (node:events:513:28)\n    at FunctionNode.emit (node:domain:489:12)\n    at FunctionNode.Node.receive (/var/task/node_modules/@kumologica/runtime/src/runtime/lib/nodes/Node.js:367:10)"
+        },
+        "message": "Function failed: Asset identified by account id: 001Mn00000RyRc6IAF does not exists in salesforce.",
+        "meta": {
+            "protocol": "http",
+            "requestId": "38e749ff-5789-485d-b478-2b8c6203d550",
+            "action": "POST",
+            "resource": "/assetmanagement/subscribe/btr",
+            "username": "e56fa12f-dac3-42a7-8f6c-d33314f78ed9",
+            "sourceIp": "1.152.28.129",
+            "queryParameters": null,
+            "pathParameters": { "proxy": "subscribe/btr" },
+            "body": { "asset": "liv-aston", "role": "resident" }
+        }
+    },
+    "severity": "error",
+    "metadata": {
+        "host": "prod",
+        "source": "integration-mca-assetmanagement-service"
+    }
+}
+```
+nalyze the event to determine the following properties:
+
+* **ERROR TYPE:**
+    * Classify the error based on the event data (e.g., "Function Execution Error", "Salesforce Integration Error", "Data Validation Error").
+    * Consider using the data.name, data.source, and message fields for classification.
+
+* **ERROR DESCRIPTION:**
+    * Provide a concise and human-readable description of the error, including relevant details for troubleshooting.
+    * Extract the core error message from the event data.
+    * Provide key elements of the error message that can help identify the issue, including mobile numbers, account IDs, or other unique identifiers or properties.
+
+* **TIMESTAMP: **
+    Extract the timestamp of this event.
+
+* **INTEGRATION AFFECTED:**
+    Include the name of the service or api affected, normally prefixed with "integration-" name. Respond with unknown if you cannot determine it based on the event data.
+
+* **DETAILS:**
+    * Node Name: - Node Name (optional)
+    * Node ID: - Node ID (optional)
+
+Present the results in the following format without any other explanation:
+
+**TIMESTAMP:**
+**ERROR TYPE:** {{ classification the error }}
+**ERROR DESCRIPTION:** {{ a succint error message of the event }}
+**INTEGRATION AFFECTED:**
+**DETAILS:**
+
+
+For example:
+**TIMESTAMP:** 2021-10-01T12:00:00Z
+**ERROR TYPE:** Salesforce Integration Error
+**ERROR DESCRIPTION:** Account with ID "001Mn00000RyRc6IAF" not found in Salesforce.
+**INTEGRATION AFFECTED:** integration-mca-assetmanagement-service
+**DETAILS:**
+    * Node ID: 7538c914.bff838
+    * Node Name: Check Asset Exist
+
+The goal is to provide a clear and concise summary of the error for easier analysis and troubleshooting, including the specific type of asset involved."

@@ -1,13 +1,30 @@
 {
     "name": "@elizaos/plugin-splunk",
     "version": "1.0.0",
-    "private": true,
-    "description": "",
-    "main": "index.ts",
+    "type": "module",
+    "main": "dist/index.js",
+    "module": "dist/index.js",
+    "types": "dist/index.d.ts",
     "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1"
+        "build": "tsup --format esm --dts",
+        "test": "jest",
+        "lint": "eslint --fix --cache ."
     },
-    "keywords": [],
-    "author": "",
-    "license": "ISC"
+    "dependencies": {
+        "@elizaos/core": "workspace:^"
+    },
+    "exports": {
+        "./package.json": "./package.json",
+        ".": {
+            "import": {
+                "@elizaos/source": "./src/index.ts",
+                "types": "./dist/index.d.ts",
+                "default": "./dist/index.js"
+            }
+        }
+    },
+    "devDependencies": {
+        "@types/node": "^20.0.0",
+        "typescript": "^5.0.0"
+    }
 }

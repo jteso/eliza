@@ -45,9 +45,7 @@
         },
         "@elizaos/plugin-quai#build": {
             "outputs": ["dist/**"],
-            "dependsOn": [
-                "@elizaos/plugin-trustdb#build"
-            ]
+            "dependsOn": ["@elizaos/plugin-trustdb#build"]
         },
         "eliza-docs#build": {
             "outputs": ["build/**"]
