@@ -1,10 +1,17 @@
 import { Client, IAgentRuntime, ServiceType } from "@elizaos/core";
-import { ISplunkService, SendContext } from "../types/splunk-types";
+import { ISplunkService, SplunkEvent } from "../types/splunk-types";
+import { ErrorAssessmentPipeline } from "./pipeline";
+
+// Tasks
+import errorNormalizerTask from "./tasks/errorNormalizerTask";
+import updateMemoryTask from "./tasks/updateMemoryTask";
+import ignoreEvaluatorTask from "./tasks/ignoreEvaluatorTask";
+import incidentResponderTask from "./tasks/incidentResponderTask";
 
 export class BasementClient {
     interval: NodeJS.Timeout;
     runtime: IAgentRuntime;
-
+    errorAssessmentPipeline: ErrorAssessmentPipeline;
     constructor(runtime: IAgentRuntime, intervalMinutes: number) {
         this.runtime = runtime;
 
@@ -15,6 +22,12 @@ export class BasementClient {
             },
             10 * 1000 // Convert minutes to milliseconds
         );
+
+        this.errorAssessmentPipeline = new ErrorAssessmentPipeline(this.runtime)
+            .addTask(errorNormalizerTask) // convert the Splunk error event to a common format
+            .addTask(updateMemoryTask) // update the memory with the error
+            .addTask(ignoreEvaluatorTask) // check if the error should be ignored
+            .addTask(incidentResponderTask); // check if the error should trigger an incident
 
         // Handle SIGINT to stop the client gracefully
         process.on("SIGINT", () => {
@@ -33,24 +46,18 @@ export class BasementClient {
         const supportQueries = querySetting
             .split(",")
             .map((query) => query.trim());
+
         console.log("Support query 1:", supportQueries[0]);
         console.log("Support query 2:", supportQueries[1]);
 
-        console.log("Splunk service:", splunkService);
-        const result: SendContext[] = await splunkService.query(
-            supportQueries[0]
-        );
+        for (const query of supportQueries) {
+            const splunkErrors: SplunkEvent[] =
+                await splunkService.query(query);
 
-        // TODO: Analyse the result with LLM
-
-        // TODO: Record this result in the database as a memory
-
-        // TODO: Evaluate the result. Is this an error? Has been seen before?
-
-        // TODO: Decide if this needs to be escalated to a human and the channel to do so: JIRA, Email, etc.
-
-        console.log("Splunk query result:", result);
-        // Add your logic for the steps that need to be performed here
+            for (const splunkError of splunkErrors) {
+                this.errorAssessmentPipeline.run(splunkError);
+            }
+        }
     }
 
     stop() {

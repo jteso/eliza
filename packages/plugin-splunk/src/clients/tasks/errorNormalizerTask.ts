@@ -1,13 +1,17 @@
 import {
     composeContext,
-    elizaLogger,
     generateText,
     IAgentRuntime,
     ModelClass,
     State,
 } from "@elizaos/core";
+import {
+    AssessmentEvent,
+    SplunkEvent,
+    SupportTask,
+} from "../../types/splunk-types";
 
-const classifyEventTemplate = `
+const NORMALIZE_EVENT_TEMPLATE = `
 Given the following JSON representing a Splunk event:
 
 {{ splunkEvent }}
@@ -54,32 +58,35 @@ For example:
 The goal is to provide a clear and concise summary of the error for easier analysis and troubleshooting, including the specific type of asset involved."
 `;
 
-// generate a class that takes the runtime in the constructor, the class should have a method called classifyEvent that takes a splunk event as input and returns the classification
-// this classify event should construct a context message using the composeState and composeMessage from the runtime @see post.ts file for an example
+const errorNormalizerTask: SupportTask = async (
+    event: SplunkEvent,
+    runtime: IAgentRuntime
+) => {
+    const contextState = {
+        splunkEvent: JSON.stringify(event, null, 2),
+    };
 
-export class Classifier {
-    runtime: IAgentRuntime;
+    const context = composeContext({
+        template: NORMALIZE_EVENT_TEMPLATE,
+        state: contextState as unknown as State,
+    });
 
-    constructor(runtime: IAgentRuntime) {
-        this.runtime = runtime;
-    }
+    const response = await generateText({
+        runtime,
+        context,
+        modelClass: ModelClass.SMALL,
+    });
 
-    async classifyEvent(splunkEvent: any): Promise<string> {
-        const classifyState = {
-            splunkEvent: JSON.stringify(splunkEvent, null, 2),
-        };
+    let nextEvent: AssessmentEvent = {
+        timestamp: Date.now(),
+        errorType: "Unknown",
+        errorDescription: "Unknown",
+        integrationAffected: "Unknown",
+        integrationDetails: {},
+    };
 
-        const context = composeContext({
-            template: classifyEventTemplate,
-            state: classifyState as unknown as State,
-        });
+    // TODO: check that response contains all expected fields
+    return { nextEvent };
+};
 
-        const response = await generateText({
-            runtime: this.runtime,
-            context,
-            modelClass: ModelClass.SMALL,
-        });
-
-        return response;
-    }
-}
+export default errorNormalizerTask;

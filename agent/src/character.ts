@@ -3,7 +3,7 @@ import { splunkPlugin } from "@elizaos/plugin-splunk";
 
 export const supportEngineerCharacter: Character = {
     name: "Douglas",
-    username: "douglas.integration.mirvac",
+    username: "douglas@mirvac.com",
     plugins: [splunkPlugin],
     clients: [],
     modelProvider: ModelProviderName.OPENAI,
