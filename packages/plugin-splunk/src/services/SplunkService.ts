@@ -7,9 +7,9 @@ import {
     State,
 } from "@elizaos/core";
 
-import { ISplunkService } from "../types/splunk-types";
+import { ISplunkService, SplunkEvent } from "../types/splunk-types";
 
-const SPLUNK_MOCK_REPONSE = [
+const SPLUNK_MOCK_REPONSE: SplunkEvent[] = [
     {
         message: {
             type: "error",
@@ -56,6 +56,12 @@ Error: Asset identified by account id: 001Mn00000RyRc6IAF does not exist in sale
             },
         },
         severity: "error",
+        metadata: {
+            host: "prod",
+            index: "main",
+            source: "integration-mca-digitalaccess-service",
+            time: Date.now(),
+        },
     },
 ];
 
@@ -69,7 +75,7 @@ export class SplunkService extends Service implements ISplunkService {
         this.runtime = runtime;
     }
 
-    async query(sql: string): Promise<SendContext[]> {
+    async query(sql: string): Promise<SplunkEvent[]> {
         if (!this.runtime) {
             throw new Error("Runtime not initialized.");
         }
@@ -79,7 +85,7 @@ export class SplunkService extends Service implements ISplunkService {
 
         // Here you would typically make an API call to Splunk and process the response
         // For the sake of this example, we'll return a mock response
-        const mockResponse: SendContext[] = [SPLUNK_MOCK_REPONSE[0]];
+        const mockResponse: SplunkEvent[] = [SPLUNK_MOCK_REPONSE[0]];
 
         return Promise.resolve(mockResponse);
     }

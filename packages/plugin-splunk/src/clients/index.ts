@@ -48,14 +48,13 @@ export class BasementClient {
             .map((query) => query.trim());
 
         console.log("Support query 1:", supportQueries[0]);
-        console.log("Support query 2:", supportQueries[1]);
 
         for (const query of supportQueries) {
             const splunkErrors: SplunkEvent[] =
                 await splunkService.query(query);
 
             for (const splunkError of splunkErrors) {
-                this.errorAssessmentPipeline.run(splunkError);
+                await this.errorAssessmentPipeline.run(splunkError);
             }
         }
     }

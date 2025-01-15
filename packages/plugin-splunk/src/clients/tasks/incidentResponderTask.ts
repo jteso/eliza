@@ -1,12 +1,8 @@
 import { IAgentRuntime } from "@elizaos/core";
-import {
-    SupportTask,
-    SplunkEvent,
-    AssessmentEvent,
-} from "../../types/splunk-types";
+import { SupportTask, AssessmentEvent } from "../../types/splunk-types";
 
 const incidentResponderTask: SupportTask = async (
-    event: SplunkEvent,
+    event: AssessmentEvent,
     runtime: IAgentRuntime
 ) => {
     // TODO

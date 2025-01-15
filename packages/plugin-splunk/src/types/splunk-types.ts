@@ -13,6 +13,7 @@ export type AssessmentEvent = {
     errorDescription: string;
     integrationAffected: string;
     integrationDetails: any;
+    hash?: string | undefined;
 };
 
 export interface SplunkEventMetadata {

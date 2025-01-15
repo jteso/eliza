@@ -25,7 +25,7 @@ export class ErrorAssessmentPipeline {
         for (const task of this.tasks) {
             const { nextEvent } = await task(currentEvent, this.agentRuntime);
             if (!nextEvent) {
-                break; // Terminate the pipeline if the task returns false
+                break;
             }
             currentEvent = nextEvent;
         }

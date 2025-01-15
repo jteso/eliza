@@ -6,7 +6,7 @@ import {
 } from "../../types/splunk-types";
 
 const updateMemoryTask: SupportTask = async (
-    event: SplunkEvent,
+    event: AssessmentEvent,
     runtime: IAgentRuntime
 ) => {
     // TODO
