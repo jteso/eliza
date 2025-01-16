@@ -15,6 +15,11 @@ The "integrationDetails" is an object with the following properties:
     * Node Name: - Node Name (optional)
     * Node ID: - Node ID (optional)
 
+# Knowledge base:
+The following knowledge can be used to help you complement (not replace) the information extracted for "errorDescription" field.
+
+{{knowledge}}
+
 # Output:
 Your response must be formatted as a valid JSON without using Markdown code block syntax (no triple backticks or other formatting). Simply present the JSON content as plain text. Here is the structure:
 

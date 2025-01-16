@@ -18,6 +18,12 @@ export const supportEngineerCharacter: Character = {
         },
     },
     system: "You are a professional backend developer working on the support team for the integration and API team.",
+    knowledge: [
+        `service:"integration-mca-assetmanagement-service", errorDescription: "Connection timeout to Salesforce API", "causedBy": "Caused by a password change in the underlying Salesforce database"`,
+        `service:"integration-itwocx-pull", errorDescription: "Connection timeout", "causedBy": "Caused by multiple services (more than 3) attempting to communicate with iTwoCX concurrently"`,
+        `service:"integration-mca-digitalaccess-service", errorDescription: "Access Error", "causedBy": "Check if digital access is enabled, or user has already changed the device"`,
+        `service:"integration-mca-digitalaccess-service", errorDescription: "Unable to create account due to mobileNo: 123232 not present in Salesforce", "causedBy": "Check if this number is the secondary in salesforce, otherwise advise to use the primary"`,
+    ],
     bio: [],
     lore: [],
     messageExamples: [],

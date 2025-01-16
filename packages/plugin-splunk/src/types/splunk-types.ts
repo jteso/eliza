@@ -1,11 +1,11 @@
 import { IAgentRuntime, Service } from "@elizaos/core";
 
 export type SupportTask = (
-    event: SplunkEvent | AssessmentEvent,
+    event: SplunkEvent | IncidentEvent,
     runtime: IAgentRuntime
-) => Promise<AssessmentEvent | undefined>;
+) => Promise<IncidentEvent | undefined>;
 
-export type AssessmentEvent = {
+export type IncidentEvent = {
     timestamp: number;
     errorType: string;
     errorDescription: string;

@@ -1,11 +1,7 @@
 import { IAgentRuntime } from "@elizaos/core";
-import {
-    AssessmentEvent,
-    SplunkEvent,
-    SupportTask,
-} from "../types/splunk-types";
+import { IncidentEvent, SplunkEvent, SupportTask } from "../types/splunk-types";
 
-export class ErrorAssessmentPipeline {
+export class ErrorTriagePipeline {
     private tasks: SupportTask[] = [];
     private agentRuntime: IAgentRuntime;
 
@@ -20,14 +16,14 @@ export class ErrorAssessmentPipeline {
 
     // Method to execute the pipeline with a given event and runtime
     async run(initialEvent: SplunkEvent): Promise<void> {
-        let currentEvent: SplunkEvent | AssessmentEvent = initialEvent;
+        let currentEvent: SplunkEvent | IncidentEvent = initialEvent;
 
         for (const task of this.tasks) {
             const nextEvent = await task(currentEvent, this.agentRuntime);
             if (!nextEvent) {
                 const taskName = task.name || "Unknown Task";
                 console.log(
-                    `Exiting the assessment pipeline due to task: ${taskName}`
+                    `Exiting the triage pipeline due to task: ${taskName}`
                 );
                 break;
             }

@@ -1,15 +1,11 @@
 import { IAgentRuntime } from "@elizaos/core";
-import {
-    SupportTask,
-    SplunkEvent,
-    AssessmentEvent,
-} from "../../types/splunk-types";
+import { SupportTask, IncidentEvent } from "../../types/splunk-types";
 import { IntegrationErrorsDatabase } from "../../adapters/integrationErrorsDatabase";
 
 let integrationErrorsDatabase: IntegrationErrorsDatabase | null = null;
 
 const errorRecorderTask: SupportTask = async (
-    event: AssessmentEvent,
+    event: IncidentEvent,
     runtime: IAgentRuntime
 ) => {
     if (!integrationErrorsDatabase) {
@@ -19,12 +15,13 @@ const errorRecorderTask: SupportTask = async (
     }
 
     try {
+        console.log("[errorRecorderTask] Adding error...");
         integrationErrorsDatabase.addError(event);
         const errorsSoFar = integrationErrorsDatabase.getAllErrors();
         console.log("[errorRecorderTask] Errors so far: ", errorsSoFar);
         return event;
     } catch (error) {
-        console.error("Error recording error in database", error);
+        console.error("[errorRecorderTask] Error found:", error);
         return undefined;
     }
 };

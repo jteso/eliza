@@ -1,6 +1,6 @@
 import { Client, IAgentRuntime, ServiceType } from "@elizaos/core";
 import { ISplunkService, SplunkEvent } from "../types/splunk-types";
-import { ErrorAssessmentPipeline } from "./pipeline";
+import { ErrorTriagePipeline } from "./pipeline";
 
 // Tasks
 import errorNormalizerTask from "./tasks/errorNormalizerTask";
@@ -8,10 +8,10 @@ import errorRecorderTask from "./tasks/errorRecorderTask";
 import ignoreEvaluatorTask from "./tasks/ignoreEvaluatorTask";
 import incidentResponderTask from "./tasks/incidentResponderTask";
 
-export class BasementClient {
+export class TriageRoomClient {
     interval: NodeJS.Timeout;
     runtime: IAgentRuntime;
-    errorAssessmentPipeline: ErrorAssessmentPipeline;
+    errorTriagePipeline: ErrorTriagePipeline;
     constructor(runtime: IAgentRuntime, intervalMinutes: number) {
         this.runtime = runtime;
 
@@ -24,11 +24,11 @@ export class BasementClient {
             10 * 1000 // Convert minutes to milliseconds
         );
 
-        this.errorAssessmentPipeline = new ErrorAssessmentPipeline(this.runtime)
-            .addTask(errorNormalizerTask) // convert the Splunk error event to a common format
-            .addTask(errorRecorderTask) // update the memory with the error
-            .addTask(ignoreEvaluatorTask) // check if the error should be ignored
-            .addTask(incidentResponderTask); // check if the error should trigger an incident
+        this.errorTriagePipeline = new ErrorTriagePipeline(this.runtime)
+            .addTask(errorNormalizerTask)
+            .addTask(errorRecorderTask)
+            .addTask(ignoreEvaluatorTask)
+            .addTask(incidentResponderTask);
 
         // Handle SIGINT to stop the client gracefully
         process.on("SIGINT", () => {
@@ -55,7 +55,7 @@ export class BasementClient {
                 await splunkService.query(query);
 
             for (const splunkError of splunkErrors) {
-                await this.errorAssessmentPipeline.run(splunkError);
+                await this.errorTriagePipeline.run(splunkError);
             }
         }
     }
@@ -67,11 +67,11 @@ export class BasementClient {
     }
 }
 
-export const BasementClientInterface: Client = {
+export const TriageRoomClientInterface: Client = {
     start: async (runtime: IAgentRuntime) => {
-        console.log("Starting BasementClient...");
+        console.log("Starting TriageRoomClient...");
         const intervalMinutes = 0.1; // Set the interval in minutes
-        const client = new BasementClient(runtime, intervalMinutes);
+        const client = new TriageRoomClient(runtime, intervalMinutes);
         return client;
     },
     stop: async (_runtime: IAgentRuntime) => {
@@ -79,4 +79,4 @@ export const BasementClientInterface: Client = {
     },
 };
 
-export default BasementClientInterface;
+export default TriageRoomClientInterface;

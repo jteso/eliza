@@ -1,10 +1,12 @@
 import {
     composeContext,
+    Content,
     elizaLogger,
     generateText,
     IAgentRuntime,
     ModelClass,
     State,
+    stringToUuid,
 } from "@elizaos/core";
 
 import { createHash } from "crypto";
@@ -12,12 +14,13 @@ import { createHash } from "crypto";
 import { NORMALIZE_EVENT_TEMPLATE } from "../../templates";
 
 import {
-    AssessmentEvent,
+    IncidentEvent,
     SplunkEvent,
     SupportTask,
 } from "../../types/splunk-types";
+import { Memory } from "@elizaos/core";
 
-const parseSafe = (response: string): AssessmentEvent => {
+const parseSafe = (response: string): IncidentEvent => {
     // Remove markdown code block syntax if present
     let respAsString = response
         .replace(/^```json\n/, "") // Remove opening ```json
@@ -30,7 +33,7 @@ const parseSafe = (response: string): AssessmentEvent => {
     }
 };
 
-const computeHash = (event: AssessmentEvent): string => {
+const computeHash = (event: IncidentEvent): string => {
     // exclude timestamp from hash
     const { timestamp, ...input } = event;
     const inputAsString = JSON.stringify(input, Object.keys(input).sort());
@@ -44,13 +47,25 @@ const errorNormalizerTask: SupportTask = async (
     event: SplunkEvent,
     runtime: IAgentRuntime
 ) => {
-    const contextState = {
-        splunkEvent: JSON.stringify(event),
+    // see if we got any memory on the knowledge base about this issue
+    const content: Content = {
+        text: `service:"integration-mca-digitalaccess-service", errorDescription: "Unable to create account due to mobileNo: 123232 not present in Salesforce"`,
     };
+
+    const errorMessage: Memory = {
+        content,
+        roomId: runtime.agentId,
+        userId: runtime.agentId,
+        agentId: runtime.agentId,
+    };
+
+    const state = await runtime.composeState(errorMessage, {
+        splunkEvent: JSON.stringify(event),
+    });
 
     const context = composeContext({
         template: NORMALIZE_EVENT_TEMPLATE,
-        state: contextState as unknown as State,
+        state: state as unknown as State,
     });
 
     const response = await generateText({
@@ -65,7 +80,7 @@ const errorNormalizerTask: SupportTask = async (
         elizaLogger.error("Could not parse response as JSON", { response });
         return undefined;
     } else {
-        let nextEvent: AssessmentEvent = {
+        let nextEvent: IncidentEvent = {
             timestamp: event.metadata.time,
             errorType: assessmentEvent.errorType || "Unknown",
             errorDescription: assessmentEvent.errorDescription || "Unknown",
@@ -81,3 +96,6 @@ const errorNormalizerTask: SupportTask = async (
 };
 
 export default errorNormalizerTask;
+function composeState() {
+    throw new Error("Function not implemented.");
+}

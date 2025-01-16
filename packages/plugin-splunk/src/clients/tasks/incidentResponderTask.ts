@@ -1,11 +1,13 @@
 import { IAgentRuntime } from "@elizaos/core";
-import { SupportTask, AssessmentEvent } from "../../types/splunk-types";
+import { SupportTask, IncidentEvent } from "../../types/splunk-types";
 
 const incidentResponderTask: SupportTask = async (
-    event: AssessmentEvent,
+    event: IncidentEvent,
     runtime: IAgentRuntime
 ) => {
-    console.log("Reporter Task: ", event);
+    console.log("[=== Triage completed ===]");
+    console.log(event);
+    console.log("[========================]");
     return undefined;
 };
 

@@ -1,5 +1,5 @@
 import { Database } from "better-sqlite3";
-import { AssessmentEvent } from "../types/splunk-types";
+import { IncidentEvent } from "../types/splunk-types";
 
 export interface IntegrationDBError {
     id: number; // Assuming ID is the primary key
@@ -41,7 +41,7 @@ export class IntegrationErrorsDatabase {
         `);
     }
 
-    addError(assessedError: AssessmentEvent): number | bigint | null {
+    addError(incidentEvent: IncidentEvent): number | bigint | null {
         const insertSql = `
             INSERT INTO integration_errors (
                 error_timestamp,
@@ -60,14 +60,14 @@ export class IntegrationErrorsDatabase {
             );
         `;
         const mappedError = {
-            error_timestamp: assessedError.timestamp,
-            error_type: assessedError.errorType,
-            error_description: assessedError.errorDescription,
-            integration_affected: assessedError.integrationAffected,
+            error_timestamp: incidentEvent.timestamp,
+            error_type: incidentEvent.errorType,
+            error_description: incidentEvent.errorDescription,
+            integration_affected: incidentEvent.integrationAffected,
             integration_details: JSON.stringify(
-                assessedError.integrationDetails
+                incidentEvent.integrationDetails
             ),
-            hash: assessedError.hash,
+            hash: incidentEvent.hash,
         };
         try {
             const result = this.db.prepare(insertSql).run(mappedError);
