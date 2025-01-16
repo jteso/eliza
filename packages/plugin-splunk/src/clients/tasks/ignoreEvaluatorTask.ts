@@ -20,7 +20,7 @@ const ignoreEvaluatorTask: SupportTask = async (
     };
 
     // TODO: check that response contains all expected fields
-    return { nextEvent };
+    return nextEvent;
 };
 
 export default ignoreEvaluatorTask;

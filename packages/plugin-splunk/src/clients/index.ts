@@ -4,7 +4,7 @@ import { ErrorAssessmentPipeline } from "./pipeline";
 
 // Tasks
 import errorNormalizerTask from "./tasks/errorNormalizerTask";
-import updateMemoryTask from "./tasks/updateMemoryTask";
+import errorRecorderTask from "./tasks/errorRecorderTask";
 import ignoreEvaluatorTask from "./tasks/ignoreEvaluatorTask";
 import incidentResponderTask from "./tasks/incidentResponderTask";
 
@@ -16,7 +16,8 @@ export class BasementClient {
         this.runtime = runtime;
 
         // Start a loop that runs every x minutes
-        this.interval = setInterval(
+        // TODO - revert to setInterval
+        this.interval = setTimeout(
             async () => {
                 await this.performAnalysis();
             },
@@ -25,7 +26,7 @@ export class BasementClient {
 
         this.errorAssessmentPipeline = new ErrorAssessmentPipeline(this.runtime)
             .addTask(errorNormalizerTask) // convert the Splunk error event to a common format
-            .addTask(updateMemoryTask) // update the memory with the error
+            .addTask(errorRecorderTask) // update the memory with the error
             .addTask(ignoreEvaluatorTask) // check if the error should be ignored
             .addTask(incidentResponderTask); // check if the error should trigger an incident
 

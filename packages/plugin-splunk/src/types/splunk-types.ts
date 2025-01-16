@@ -3,9 +3,7 @@ import { IAgentRuntime, Service } from "@elizaos/core";
 export type SupportTask = (
     event: SplunkEvent | AssessmentEvent,
     runtime: IAgentRuntime
-) => Promise<{
-    nextEvent: AssessmentEvent | void;
-}>;
+) => Promise<AssessmentEvent | undefined>;
 
 export type AssessmentEvent = {
     timestamp: number;

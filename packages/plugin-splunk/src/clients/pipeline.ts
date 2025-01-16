@@ -23,8 +23,12 @@ export class ErrorAssessmentPipeline {
         let currentEvent: SplunkEvent | AssessmentEvent = initialEvent;
 
         for (const task of this.tasks) {
-            const { nextEvent } = await task(currentEvent, this.agentRuntime);
+            const nextEvent = await task(currentEvent, this.agentRuntime);
             if (!nextEvent) {
+                const taskName = task.name || "Unknown Task";
+                console.log(
+                    `Exiting the assessment pipeline due to task: ${taskName}`
+                );
                 break;
             }
             currentEvent = nextEvent;

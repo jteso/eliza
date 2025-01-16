@@ -11,7 +11,6 @@ import { SlackClientInterface } from "@elizaos/client-slack";
 import { TelegramClientInterface } from "@elizaos/client-telegram";
 import { TwitterClientInterface } from "@elizaos/client-twitter";
 // import { ReclaimAdapter } from "@elizaos/plugin-reclaim";
-import { DirectClient } from "@elizaos/client-direct";
 import { PrimusAdapter } from "@elizaos/plugin-primus";
 
 import {
