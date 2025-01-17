@@ -1,5 +1,8 @@
 import { Database } from "better-sqlite3";
 import { IncidentEvent } from "../types/splunk-types";
+import { IAgentRuntime } from "@elizaos/core";
+import { IDatabaseAdapter } from "@elizaos/core";
+import { PostgresDatabaseAdapter } from "@elizaos/adapter-postgres";
 
 export interface IntegrationDBError {
     id: number; // Assuming ID is the primary key
@@ -12,26 +15,24 @@ export interface IntegrationDBError {
 }
 
 export class IntegrationErrorsDatabase {
-    private db: Database;
-    constructor(db: Database) {
-        this.db = db;
-        // check if the table exists, if not create them
-        const tables = this.db
-            .prepare(
-                "SELECT name FROM sqlite_master WHERE type='table' AND name='integration_errors';"
-            )
-            .all();
-
-        if (tables.length === 0) {
-            this.initializeSchema();
-        }
+    private db: PostgresDatabaseAdapter;
+    IDatabaseAdapter;
+    constructor(databaseAdapter: IDatabaseAdapter) {
+        this.db = databaseAdapter as PostgresDatabaseAdapter;
     }
-    private initializeSchema() {
+    async initialize() {
         // Create integration_errors table
-        this.db.exec(`
+        const result = await this.db.query(
+            `SELECT table_name
+                FROM information_schema.tables
+                WHERE table_schema = 'public' AND table_name = 'integration_errors';`
+        );
+        // Initialize schema if table does not exist yet
+        if (result.rowCount === 0) {
+            await this.db.query(`
             CREATE TABLE IF NOT EXISTS integration_errors (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                error_timestamp DATETIME NOT NULL,
+                id SERIAL PRIMARY KEY,
+                error_timestamp TIMESTAMP NOT NULL,
                 error_type TEXT NOT NULL,
                 error_description TEXT NOT NULL,
                 integration_affected TEXT NOT NULL,
@@ -39,11 +40,12 @@ export class IntegrationErrorsDatabase {
                 hash TEXT NOT NULL
             );
         `);
+        }
     }
 
-    addError(incidentEvent: IncidentEvent): number | bigint | null {
-        const insertSql = `
-            INSERT INTO integration_errors (
+    async addError(incidentEvent: IncidentEvent): Promise<number | bigint> {
+        const result = this.db.query(
+            `INSERT INTO integration_errors (
                 error_timestamp,
                 error_type,
                 error_description,
@@ -51,40 +53,23 @@ export class IntegrationErrorsDatabase {
                 integration_details,
                 hash
             ) VALUES (
-                @error_timestamp,
-                @error_type,
-                @error_description,
-                @integration_affected,
-                @integration_details,
-                @hash
-            );
-        `;
-        const mappedError = {
-            error_timestamp: incidentEvent.timestamp,
-            error_type: incidentEvent.errorType,
-            error_description: incidentEvent.errorDescription,
-            integration_affected: incidentEvent.integrationAffected,
-            integration_details: JSON.stringify(
-                incidentEvent.integrationDetails
-            ),
-            hash: incidentEvent.hash,
-        };
-        try {
-            const result = this.db.prepare(insertSql).run(mappedError);
-            return result.lastInsertRowid;
-        } catch (error) {
-            console.error("Error inserting error into database", error);
-            return null;
-        }
+                $1,$2,$3,$4,$5,$6
+            )`,
+            [
+                incidentEvent.timestamp,
+                incidentEvent.errorType,
+                incidentEvent.errorDescription,
+                incidentEvent.integrationAffected,
+                JSON.stringify(incidentEvent.integrationDetails),
+                incidentEvent.hash,
+            ]
+        );
+
+        return (await result).rowCount;
     }
 
-    getAllErrors(): IntegrationDBError[] {
-        const selectSql = `
-            SELECT * FROM integration_errors;
-        `;
-        const results = this.db
-            .prepare(selectSql)
-            .all() as IntegrationDBError[];
-        return results;
+    async getAllErrors(): Promise<IntegrationDBError[]> {
+        const result = await this.db.query("SELECT * FROM integration_errors");
+        return result.rows as IntegrationDBError[];
     }
 }

@@ -10,14 +10,15 @@ const errorRecorderTask: SupportTask = async (
 ) => {
     if (!integrationErrorsDatabase) {
         integrationErrorsDatabase = new IntegrationErrorsDatabase(
-            runtime.databaseAdapter.db
+            runtime.databaseAdapter
         );
+        await integrationErrorsDatabase.initialize();
     }
 
     try {
         console.log("[errorRecorderTask] Adding error...");
         integrationErrorsDatabase.addError(event);
-        const errorsSoFar = integrationErrorsDatabase.getAllErrors();
+        const errorsSoFar = await integrationErrorsDatabase.getAllErrors();
         console.log("[errorRecorderTask] Errors so far: ", errorsSoFar);
         return event;
     } catch (error) {

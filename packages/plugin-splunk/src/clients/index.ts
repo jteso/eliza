@@ -7,6 +7,7 @@ import errorNormalizerTask from "./tasks/errorNormalizerTask";
 import errorRecorderTask from "./tasks/errorRecorderTask";
 import ignoreEvaluatorTask from "./tasks/ignoreEvaluatorTask";
 import incidentResponderTask from "./tasks/incidentResponderTask";
+import rootCauseAnalysisTask from "./tasks/rootCauseAnalysisTask";
 
 export class TriageRoomClient {
     interval: NodeJS.Timeout;
@@ -28,6 +29,7 @@ export class TriageRoomClient {
             .addTask(errorNormalizerTask)
             .addTask(errorRecorderTask)
             .addTask(ignoreEvaluatorTask)
+            .addTask(rootCauseAnalysisTask)
             .addTask(incidentResponderTask);
 
         // Handle SIGINT to stop the client gracefully

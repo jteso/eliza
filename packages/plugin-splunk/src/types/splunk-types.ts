@@ -6,7 +6,7 @@ export type SupportTask = (
 ) => Promise<IncidentEvent | undefined>;
 
 export type IncidentEvent = {
-    timestamp: number;
+    timestamp: string;
     errorType: string;
     errorDescription: string;
     integrationAffected: string;

@@ -81,7 +81,7 @@ const errorNormalizerTask: SupportTask = async (
         return undefined;
     } else {
         let nextEvent: IncidentEvent = {
-            timestamp: event.metadata.time,
+            timestamp: new Date(event.metadata.time).toISOString(),
             errorType: assessmentEvent.errorType || "Unknown",
             errorDescription: assessmentEvent.errorDescription || "Unknown",
             integrationAffected:

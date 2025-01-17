@@ -11,6 +11,7 @@
         "lint": "eslint --fix --cache ."
     },
     "dependencies": {
+        "@elizaos/adapter-postgres": "workspace:^",
         "@elizaos/core": "workspace:^"
     },
     "exports": {
