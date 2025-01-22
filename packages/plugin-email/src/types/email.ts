@@ -1,9 +1,5 @@
 import { Service } from "@elizaos/core";
-
-export enum ServiceType {
-    TEXT_GENERATION = "text_generation",
-    EMAIL = "email",
-}
+import { EmailContent } from "mail-notifier";
 
 interface EmailAttachment {
     filename: string;
@@ -12,6 +8,7 @@ interface EmailAttachment {
 }
 
 export interface SendEmailOptions {
+    from?: string;
     to: string | string[];
     subject: string;
     text?: string;
@@ -22,7 +19,7 @@ export interface SendEmailOptions {
     replyTo?: string;
 }
 
-interface EmailResponse {
+export interface EmailResponse {
     success: boolean;
     messageId?: string;
     response?: string;
@@ -31,5 +28,5 @@ interface EmailResponse {
 
 export interface IEmailService extends Service {
     send(options: SendEmailOptions): Promise<EmailResponse>;
+    receive(callback: (mail: EmailContent) => void): void;
 }
-``;

@@ -1,9 +1,15 @@
-import { plugin } from "./plugin";
+import type { Plugin } from "@elizaos/core";
+import { EmailClientInterface } from "./clients/emailClient";
 
-// Default export should be the plugin itself
-export default plugin;
+export const emailPlugin: Plugin = {
+    name: "email",
+    description: "Email plugin for Eliza",
+    clients: [EmailClientInterface],
+    actions: [],
+    evaluators: [],
+    services: [],
+};
 
-// Named exports for additional functionality
-export * from "./services/webhook.js";
-export * from "./services/twilio.js";
-export * from "./types/webhook.js";
+export * from "./types";
+
+export default emailPlugin;

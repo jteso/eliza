@@ -1,14 +1,25 @@
 import { Character, ModelProviderName } from "@elizaos/core";
 import { splunkPlugin } from "@elizaos/plugin-splunk";
+import { emailPlugin } from "@elizaos/plugin-email";
 
 export const supportEngineerCharacter: Character = {
     name: "Douglas",
     username: "douglas@mirvac.com",
-    plugins: [splunkPlugin],
+    plugins: [emailPlugin, splunkPlugin],
     clients: [],
     modelProvider: ModelProviderName.OPENAI,
     settings: {
         secrets: {
+            EMAIL_OUTGOING_SERVICE: "gmail",
+            EMAIL_OUTGOING_USER: "jtejob@gmail.com",
+            EMAIL_OUTGOING_PASS: "lgqd vbqy tzkh pjgf",
+
+            EMAIL_INCOMING_SERVICE: "imap",
+            EMAIL_INCOMING_HOST: "s04ge.syd5.hostingplatform.net.au",
+            EMAIL_INCOMING_PORT: "993",
+            EMAIL_INCOMING_USER: "javier@kumologica.com",
+            EMAIL_INCOMING_PASS: "welcomejavier",
+
             SUPPORT_QUERIES:
                 'index=\"mca-prod-integration\" message.type=\"error\" host=prod source=\"integration-mca-assetmanagement-service\", \
                  index=\"mca-prod-integration\" message.type=\"error\" host=prod source=\"integration-mca-booking-service\" ',

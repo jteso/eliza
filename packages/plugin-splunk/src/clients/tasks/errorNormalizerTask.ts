@@ -9,6 +9,8 @@ import {
     stringToUuid,
 } from "@elizaos/core";
 
+import { IEmailService } from "@elizaos/plugin-email";
+
 import { createHash } from "crypto";
 
 import { NORMALIZE_EVENT_TEMPLATE } from "../../templates";
@@ -19,6 +21,7 @@ import {
     SupportTask,
 } from "../../types/splunk-types";
 import { Memory } from "@elizaos/core";
+import { ServiceType } from "@elizaos/core";
 
 const parseSafe = (response: string): IncidentEvent => {
     // Remove markdown code block syntax if present
@@ -47,6 +50,21 @@ const errorNormalizerTask: SupportTask = async (
     event: SplunkEvent,
     runtime: IAgentRuntime
 ) => {
+    // const clients = runtime.clients;
+    // const emailService = runtime.getService<IEmailService>(
+    //     ServiceType.TEXT_GENERATION
+    // ) as IEmailService;
+
+    // try {
+    //     await emailService.send({
+    //         to: "jtejob@gmail.com",
+    //         subject: "email test from the agent",
+    //         text: "Please tell me that you can read this message. that would make me very happy",
+    //     });
+    // } catch (err) {
+    //     throw err;
+    // }
+
     // see if we got any memory on the knowledge base about this issue
     const content: Content = {
         text: `service:"integration-mca-digitalaccess-service", errorDescription: "Unable to create account due to mobileNo: 123232 not present in Salesforce"`,

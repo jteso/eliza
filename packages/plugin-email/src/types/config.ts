@@ -1,32 +1,32 @@
-export enum EmailProvider {
+export enum EmailOutgoingProvider {
     GMAIL = "gmail",
-    AWS_SES = "aws_ses",
     SMTP = "smtp",
 }
+
+export enum EmailIncomingProvider {
+    IMAP = "imap",
+}
 interface BaseConfig {
-    provider: EmailProvider;
-    from: string;
-}
-interface GmailConfig extends BaseConfig {
-    provider: EmailProvider.GMAIL;
+    provider: EmailOutgoingProvider;
     user: string;
     pass: string;
 }
-
-interface SmtpConfig extends BaseConfig {
-    provider: EmailProvider.SMTP;
+export interface GmailConfig extends BaseConfig {
+    service: string;
+}
+export interface SmtpConfig extends BaseConfig {
     host: string;
-    port: string;
+    port: number;
     secure: boolean;
+}
+
+export interface ImapConfig {
+    provider: EmailIncomingProvider;
+    host: string;
+    port: number;
     user: string;
     pass: string;
 }
 
-interface AwsSesConfig extends BaseConfig {
-    provider: EmailProvider.AWS_SES;
-    awsRegion: string;
-    awsAccessKeyId: string;
-    awsSecretAccessKey: string;
-}
-
-export type EmailServiceConfig = GmailConfig | SmtpConfig | AwsSesConfig;
+export type OutgoingConfig = GmailConfig | SmtpConfig;
+export type IncomingConfig = ImapConfig;

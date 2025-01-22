@@ -1,9 +1,9 @@
 import { IAgentRuntime } from "@elizaos/core";
-import { ErrorAssessmentPipeline } from "../src/clients/pipeline";
+import { ErrorTriagePipeline } from "../src/clients/pipeline";
 
 import {
     SupportTask,
-    AssessmentEvent,
+    IncidentEvent,
     SplunkEvent,
 } from "../src/types/splunk-types";
 
@@ -79,18 +79,32 @@ describe("ErrorAssessmentPipeline", () => {
 
     // pipeline = new ErrorAssessmentPipeline(mockRuntime);
 
-    let pipeline: ErrorAssessmentPipeline;
+    let pipeline: ErrorTriagePipeline;
 
     beforeEach(() => {
-        pipeline = new ErrorAssessmentPipeline(mockRuntime);
+        pipeline = new ErrorTriagePipeline(mockRuntime);
     });
 
     test("should add tasks to the pipeline", () => {
         const task1: SupportTask = jest.fn(() =>
-            Promise.resolve({ nextEvent: {} as AssessmentEvent })
+            Promise.resolve({
+                timestamp: new Date().toISOString(), // Example timestamp
+                errorType: "Sample Error Type",
+                errorDescription: "This is a sample error description.",
+                integrationAffected: "Sample Integration",
+                integrationDetails: {}, // Provide appropriate details
+                hash: "sampleHash", // Optional property
+            })
         );
         const task2: SupportTask = jest.fn(() =>
-            Promise.resolve({ nextEvent: {} as AssessmentEvent })
+            Promise.resolve({
+                timestamp: new Date().toISOString(), // Example timestamp
+                errorType: "Sample Error Type",
+                errorDescription: "This is a sample error description.",
+                integrationAffected: "Sample Integration",
+                integrationDetails: {}, // Provide appropriate details
+                hash: "sampleHash", // Optional property
+            })
         );
 
         pipeline.addTask(task1).addTask(task2);
@@ -102,13 +116,25 @@ describe("ErrorAssessmentPipeline", () => {
 
     test("should run tasks in the pipeline", async () => {
         const task1: SupportTask = jest.fn(() =>
-            Promise.resolve({ nextEvent: {} as AssessmentEvent })
+            Promise.resolve({
+                timestamp: new Date().toISOString(), // Example timestamp
+                errorType: "Sample Error Type",
+                errorDescription: "This is a sample error description.",
+                integrationAffected: "Sample Integration",
+                integrationDetails: {}, // Provide appropriate details
+                hash: "sampleHash", // Optional property
+            })
         );
-        const task2: SupportTask = jest.fn(() =>
-            Promise.resolve({ nextEvent: undefined })
-        ); // This will stop the pipeline
+        const task2: SupportTask = jest.fn(() => Promise.resolve(undefined)); // This will stop the pipeline
         const task3: SupportTask = jest.fn(() =>
-            Promise.resolve({ nextEvent: {} as AssessmentEvent })
+            Promise.resolve({
+                timestamp: new Date().toISOString(), // Example timestamp
+                errorType: "Sample Error Type",
+                errorDescription: "This is a sample error description.",
+                integrationAffected: "Sample Integration",
+                integrationDetails: {}, // Provide appropriate details
+                hash: "sampleHash", // Optional property
+            })
         );
 
         pipeline.addTask(task1).addTask(task2).addTask(task3);
@@ -122,11 +148,16 @@ describe("ErrorAssessmentPipeline", () => {
 
     test("should stop execution when a task returns undefined", async () => {
         const task1: SupportTask = jest.fn(() =>
-            Promise.resolve({ nextEvent: {} as AssessmentEvent })
+            Promise.resolve({
+                timestamp: new Date().toISOString(), // Example timestamp
+                errorType: "Sample Error Type",
+                errorDescription: "This is a sample error description.",
+                integrationAffected: "Sample Integration",
+                integrationDetails: {}, // Provide appropriate details
+                hash: "sampleHash", // Optional property
+            })
         );
-        const task2: SupportTask = jest.fn(() =>
-            Promise.resolve({ nextEvent: undefined })
-        ); // This will stop the pipeline
+        const task2: SupportTask = jest.fn(() => Promise.resolve(undefined)); // This will stop the pipeline
 
         pipeline.addTask(task1).addTask(task2);
 

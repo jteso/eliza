@@ -12,7 +12,8 @@
     },
     "dependencies": {
         "@elizaos/adapter-postgres": "workspace:^",
-        "@elizaos/core": "workspace:^"
+        "@elizaos/core": "workspace:^",
+        "@elizaos/plugin-email": "workspace:^"
     },
     "exports": {
         "./package.json": "./package.json",
@@ -26,6 +27,7 @@
     },
     "devDependencies": {
         "@types/jest": "^29.5.14",
+        "@types/mail-notifier": "0.5.2",
         "@types/node": "^20.0.0",
         "jest": "^29.7.0",
         "ts-jest": "^29.2.5",

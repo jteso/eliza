@@ -1,6 +1,6 @@
 import { Client, IAgentRuntime, ServiceType } from "@elizaos/core";
 import { ISplunkService, SplunkEvent } from "../types/splunk-types";
-import { ErrorTriagePipeline } from "./pipeline";
+import { ErrorTriagePipeline } from "./tasks/pipeline";
 
 // Tasks
 import errorNormalizerTask from "./tasks/errorNormalizerTask";
@@ -8,6 +8,7 @@ import errorRecorderTask from "./tasks/errorRecorderTask";
 import ignoreEvaluatorTask from "./tasks/ignoreEvaluatorTask";
 import incidentResponderTask from "./tasks/incidentResponderTask";
 import rootCauseAnalysisTask from "./tasks/rootCauseAnalysisTask";
+import { EmailContent } from "mail-notifier";
 
 export class TriageRoomClient {
     interval: NodeJS.Timeout;
@@ -20,10 +21,14 @@ export class TriageRoomClient {
         // TODO - revert to setInterval
         this.interval = setTimeout(
             async () => {
-                await this.performAnalysis();
+                await this.findErrorsInSplunk();
             },
             10 * 1000 // Convert minutes to milliseconds
         );
+
+        setTimeout(async () => {
+            await this.findErrorsInEmail();
+        }, 10000);
 
         this.errorTriagePipeline = new ErrorTriagePipeline(this.runtime)
             .addTask(errorNormalizerTask)
@@ -37,8 +42,13 @@ export class TriageRoomClient {
             this.stop();
         });
     }
-
-    async performAnalysis() {
+    async findErrorsInEmail() {
+        console.log("Looking for errros in email...");
+        this.runtime.clients.email.receive((mail: EmailContent) => {
+            console.log("==> Email received: ", mail);
+        });
+    }
+    async findErrorsInSplunk() {
         console.log("Performing required steps...");
         const splunkService = this.runtime.getService<ISplunkService>(
             ServiceType.SPLUNK
@@ -61,6 +71,7 @@ export class TriageRoomClient {
             }
         }
     }
+    // Handle email notifications
 
     stop() {
         clearInterval(this.interval);

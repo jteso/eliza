@@ -1,5 +1,9 @@
 import { IAgentRuntime } from "@elizaos/core";
-import { IncidentEvent, SplunkEvent, SupportTask } from "../types/splunk-types";
+import {
+    IncidentEvent,
+    SplunkEvent,
+    SupportTask,
+} from "../../types/splunk-types";
 
 export class ErrorTriagePipeline {
     private tasks: SupportTask[] = [];

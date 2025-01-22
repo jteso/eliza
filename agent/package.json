@@ -52,6 +52,7 @@
         "@elizaos/plugin-cronoszkevm": "workspace:*",
         "@elizaos/plugin-depin": "workspace:*",
         "@elizaos/plugin-echochambers": "workspace:*",
+        "@elizaos/plugin-email": "workspace:^",
         "@elizaos/plugin-evm": "workspace:*",
         "@elizaos/plugin-flow": "workspace:*",
         "@elizaos/plugin-fuel": "workspace:*",
